@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=390, user-scalable=no" />
+  <title>FaceTime Ongoing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 390px;
+      height: 710px;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background-color: black;
+      position: relative;
+    }
 
+    video {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .bottom-icons {
+      position: absolute;
+      bottom: 36px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .bottom-icons img {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: transform 0.15s ease;
+    }
+
+    .bottom-icons img:active {
+      transform: scale(0.92);
+    }
+  </style>
+</head>
+<body>
+  <video src="videos/aa2.MP4" autoplay muted loop playsinline></video>
+
+  <div class="bottom-icons">
+    <img src="images/pp1.PNG" alt="Icon 1" />
+    <img src="images/de.PNG" alt="Decline" />
+    <img src="images/pp2.PNG" alt="Icon 2" />
+  </div>
+</body>
+</html>
