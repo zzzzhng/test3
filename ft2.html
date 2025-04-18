@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       width: 390px;
-      height: 710px;
+      height: 690px;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
       background-color: black;
@@ -30,14 +30,15 @@
       left: 0;
       width: 100%;
       display: flex;
-      justify-content: space-around;
+      justify-content: center; /* 가운데 정렬 */
       align-items: center;
+      gap: 28px;                /* 아이콘 간격 줄이기 */
       z-index: 2;
     }
 
     .bottom-icons img {
-      width: 66px;
-      height: 66px;
+      width: 62px;              /* 크기 약간 축소 */
+      height: 62px;
       border-radius: 50%;
       object-fit: cover;
       transition: transform 0.15s ease;
