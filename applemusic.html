@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=390, user-scalable=no" />
+  <title>무제 플레이리스트</title>
+  <style>
+    @font-face {
+      font-family: 'SF Pro Display';
+      src: url('https://cdn.jsdelivr.net/gh/sergienkoekaterina/fonts@main/SFProDisplay-Regular.woff2') format('woff2');
+    }
+
+    body {
+      margin: 0;
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      background-color: white;
+      width: 390px;
+      height: 844px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scroll-area {
+      position: absolute;
+      top: 60px;
+      bottom: 60px;
+      width: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      padding: 16px 12px 8px;
+      font-size: 18px;
+      font-weight: 500;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: white;
+      z-index: 10;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      max-width: 390px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+
+    .search-bar {
+      flex: 1;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background-color: #f1f1f1;
+      font-size: 14px;
+      border: none;
+      color: #333;
+    }
+
+    .search-bar::placeholder {
+      color: #888;
+    }
+
+    .playlist-cover {
+      width: 90%;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto 12px;
+      border-radius: 20px;
+      overflow: hidden;
+      background-color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .playlist-cover video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 20px;
+    }
+
+    .playlist-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .playlist-updated {
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      margin: 0 16px 20px;
+    }
+
+    .controls button {
+      flex: 1;
+      margin: 0 6px;
+      padding: 12px 0;
+      border-radius: 12px;
+      font-size: 16px;
+      border: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+.play-btn,
+.shuffle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #dcdcdc;
+  color: #ff2d55;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 12px 0;
+  flex: 1;
+  border: none;
+  font-size: 16px;
+}
+
+    .shuffle-btn .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .music-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 16px 80px;
+    }
+
+    .music-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .music-cover {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background-size: cover;
+      background-position: center;
+      margin-right: 12px;
+      background-color: #ccc;
+    }
+
+    .music-info {
+      font-size: 16px;
+    }
+
+    .music-info .artist {
+      font-size: 13px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .now-playing-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 390px;
+      height: 60px;
+      background-color: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .now-playing-left {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .now-playing-info {
+      margin-left: 12px;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #000;
+    }
+
+    .now-playing-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+
+    .now-playing-controls svg {
+      display: block;
+    }
+
+    .shareplay-popup {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.95);
+      width: 380px;
+      height: 380px;
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    .shareplay-popup.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .shareplay-header {
+      text-align: center;
+      padding: 24px 20px 16px;
+      position: relative;
+    }
+
+    #close-shareplay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #ff2d55;
+    }
+
+    .shareplay-header img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
+    }
+
+    .shareplay-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 6px;
+    }
+
+    .shareplay-header p {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .shareplay-profile {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f0f0f5;
+      border-radius: 16px;
+      padding: 10px 16px;
+      margin: 16px;
+    }
+
+    .shareplay-profile .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shareplay-profile .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b0b0b0, #e0e0e0);
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .shareplay-profile .name {
+      font-size: 16px;
+    }
+
+    .edit-btn {
+      font-size: 14px;
+      color: #d00;
+      font-weight: 500;
+    }
+
+    .sub-text {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      margin-top: 16px;
+      margin-bottom: 16px;
+      padding: 0 16px;
+    }
+
+    .shareplay-footer {
+      text-align: center;
+      padding: 0 16px 5px;
+    }
+
+    .shareplay-footer button {
+      background: #ff2d55;
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 0;
+      width: 100%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <span style="font-size: 20px; margin-right: 12px;">&larr;</span>
+    무제 플레이리스트
+  </div>
+
+  <div class="scroll-area">
+    <div class="search-container">
+      <input type="text" class="search-bar" placeholder="검색" />
+    </div>
+
+    <div class="playlist-cover">
+      <video src="videos/aa1.MP4" autoplay muted loop playsinline></video>
+    </div>
+
+    <div class="playlist-title">무제 플레이리스트</div>
+    <div class="playlist-updated">금요일에 업데이트됨</div>
+
+<div class="controls">
+  <button class="play-btn">
+    <span class="icon">
+      <!-- ▶️ 아이콘 -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ff2d55" viewBox="0 0 16 16">
+        <path d="M4 3.993v8.014c0 .53.608.846 1.043.53l6.07-4.007a.636.636 0 000-1.06L5.043 3.462A.636.636 0 004 3.993z"/>
+      </svg>
+    </span>
+    재생
+  </button>
+
+  <button class="shuffle-btn">
+    <span class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+           fill="none" stroke="#ff2d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h3c2 0 4 4 6 6s4 4 6 4" />
+        <polyline points="18 14 21 16 18 18" transform="translate(0 -8)" />
+        <path d="M3 18h3c2 0 4-4 6-6s4-4 6-4" />
+        <polyline points="18 14 21 16 18 18" transform="translate(0 0)" />
+      </svg>
+    </span>
+    임의 재생
+  </button>
+</div>
+
+
+    <ul class="music-list">
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z1.jpg');"></div>
+        <div class="music-info">Paper Plane<div class="artist">Peder Elias</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z2.jpg');"></div>
+        <div class="music-info">RPG (feat. 6LACK)<div class="artist">Kehlani</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z3.jpg');"></div>
+        <div class="music-info">ABCDLOVE<div class="artist">보이넥스트도어</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z4.jpg');"></div>
+        <div class="music-info">My Turn<div class="artist">SZA</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z5.jpg');"></div>
+        <div class="music-info">하루 끝<div class="artist">아이유</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z6.jpg');"></div>
+        <div class="music-info">luther<div class="artist">Kendrick Lamar & SZA</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z7.jpg');"></div>
+        <div class="music-info">좋다고 말해<div class="artist">볼빨간사춘기</div></div>
+      </li>
+      <li class="music-item">
+        <div class="music-cover" style="background-image: url('pimages/z8.jpg');"></div>
+        <div class="music-info">마루는 강쥐<div class="artist">해원</div></div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="now-playing-bar">
+    <div class="now-playing-left">
+      <div class="music-cover" style="background-image: url('pimages/z9.jpg');"></div>
+      <div class="now-playing-info">Yes or No</div>
+    </div>
+    <div class="now-playing-controls">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke="#000" stroke-width="2" stroke-linecap="round">
+        <line x1="6" y1="4" x2="6" y2="20" />
+        <line x1="14" y1="4" x2="14" y2="20" />
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000">
+        <polygon points="5,4 15,12 5,20" />
+        <rect x="15" y="4" width="2" height="16" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="shareplay-popup">
+    <div class="shareplay-header">
+      <button id="close-shareplay">X</button>
+      <img src="images/SharePlay.jpg" alt="Profile" />
+      <h2>김도훈님과 연결하겠습니까?</h2>
+      <p>사용자의 기기에서 Apple Music의 재생 콘텐츠를 제어할 수 있습니다.</p>
+    </div>
+
+    <div class="shareplay-profile">
+      <div class="left">
+        <div class="avatar">ME</div>
+        <div class="name">ME</div>
+      </div>
+      <div class="edit-btn">편집</div>
+    </div>
+
+    <div class="sub-text">계정 설정에서 사용자의 이름 및 사진을 언제든지 편집할 수 있습니다.</div>
+
+    <div class="shareplay-footer">
+      <a href="ft2.html" style="text-decoration: none;">
+        <button>연결</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(function() {
+      document.querySelector('.shareplay-popup').classList.add('show');
+    }, 4500);
+
+    document.getElementById('close-shareplay').onclick = function() {
+      document.querySelector('.shareplay-popup').classList.remove('show');
+    };
+  </script>
+</body>
+</html>
